@@ -1,49 +1,32 @@
 package LocalMail
 
 import (
-	"bytes"
 	"fmt"
-	"github.com/google/uuid"
-	"io"
-	"net/mail"
 	"strings"
 )
 
-func MessageToString(msg *mail.Message) (string, error) {
-	var buf bytes.Buffer
-
-	// Write the headers
-	for header, values := range msg.Header {
-		for _, value := range values {
-			_, err := fmt.Fprintf(&buf, "%s: %s\r\n", header, value)
-			if err != nil {
-				return "", err
-			}
-		}
-	}
-
-	// Write a blank line to separate headers from the body
-	buf.WriteString("\r\n")
-
-	// Write the body
-	body, err := io.ReadAll(msg.Body)
-	if err != nil {
-		return "", err
-	}
-	buf.Write(body)
-	return buf.String(), nil
+type Mail struct {
+	From    string `json:"from"`
+	To      string `json:"to"`
+	Subject string `json:"subject"`
+	Body    string `json:"body"`
 }
 
-func GetTestMessage(body string) *mail.Message {
-	message := mail.Message{}
+func (m *Mail) String() string {
+	builder := strings.Builder{}
+	fmt.Fprintf(&builder, "From: %s\n", m.From)
+	fmt.Fprintf(&builder, "To: %s\n", m.To)
+	fmt.Fprintf(&builder, "Subject: %s\n", m.Subject)
+	fmt.Fprint(&builder, "\n\n")
+	fmt.Fprintf(&builder, "%s\n", m.Body)
+	return builder.String()
+}
 
-	message.Header = mail.Header{
-		"From":       []string{"Jannes' Morning Briefing <morning@jskweb.de>"},
-		"To":         []string{"jannes@jskweb.de"},
-		"Subject":    []string{"Morning Briefing Test"},
-		"Message-ID": []string{uuid.New().String()},
+func GetTestMessage(body string) *Mail {
+	return &Mail{
+		From:    "Jannes Morning Briefing <morning@jskweb.de>",
+		To:      "jannes@jskweb.de",
+		Subject: "Morning Briefing Teste",
+		Body:    body,
 	}
-
-	message.Body = strings.NewReader(body)
-	return &message
 }
