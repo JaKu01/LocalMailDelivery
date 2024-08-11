@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/JaKu01/LocalMail"
 	"github.com/JaKu01/LocalMail/db"
-	imap2 "github.com/JaKu01/LocalMail/imap"
 	"github.com/JaKu01/LocalMail/web"
 	"github.com/emersion/go-imap/v2"
 	"github.com/emersion/go-imap/v2/imapserver/imapmemserver"
@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	username, password := os.Args[1], os.Args[2]
+	username, password := os.Getenv("USERNAME"), os.Getenv("PASSWORD")
 
 	database, err := gorm.Open(sqlite.Open("db/sqlite/database.db"), &gorm.Config{})
 	if err != nil {
@@ -30,7 +30,7 @@ func main() {
 		log.Panic("username and password required")
 	}
 
-	memServer, server := imap2.CreateServer(true)
+	memServer, server := LocalMail.CreateServer(true)
 	imapUser := imapmemserver.NewUser(username, password)
 	memServer.AddUser(imapUser)
 	err = imapUser.Create("INBOX", &imap.CreateOptions{})
@@ -44,7 +44,7 @@ func main() {
 	fmt.Fprintf(os.Stdout, "Server started for %v\n", username)
 
 	go web.StartWebAPI(imapUser, database)
-	imap2.RunServer(server)
+	LocalMail.RunServer(server)
 }
 
 func loadExistingMails(user *imapmemserver.User, username string, database *gorm.DB) {

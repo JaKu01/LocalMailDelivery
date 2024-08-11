@@ -17,4 +17,4 @@ EXPOSE 8080
 
 WORKDIR /app
 
-CMD ["./cmd/imap", "test", "test"]
+CMD ["./cmd/imap"]

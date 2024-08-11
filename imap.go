@@ -1,4 +1,4 @@
-package imap
+package LocalMail
 
 import (
 	"crypto/tls"
@@ -24,7 +24,7 @@ func loadTLSConfig(config *tls.Config, tlsCert string, tlsKey string) {
 
 func CreateServer(insecureAuth bool) (*imapmemserver.Server, *imapserver.Server) {
 	var tlsConfig *tls.Config
-	loadTLSConfig(tlsConfig, "", "")
+	loadTLSConfig(tlsConfig, os.Getenv("CERTPATH"), os.Getenv("KEYPATH"))
 
 	memServer := imapmemserver.New()
 
