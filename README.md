@@ -4,12 +4,16 @@ It can be self-hosted to deliver mails to a local mailbox which
 can be accessed by any IMAP client inside the respective LAN.
 
 ## Usage
-The project is currently in its early stages and is not yet suitable for production use. 
-To run the application, it is recommended to use Docker with the provided Dockerfile. 
-You can specify your username and password as the first and second arguments of the `CMD` instruction in the Dockerfile. 
-Please note that this setup is intended for testing purposes only, as it is not secure. 
-This approach will be updated in the future.
+The project is currently in its early stages and is not yet ready for production use. 
+It is recommended to use Docker with the provided Dockerfile to run the application. 
+You can configure your username, password, certificates, and keys through the following environment variables:
 
+```
+USERNAME=yourusername
+PASSWORD=yourpassword
+CERTIFICATE_PATH=/path/to/certificate
+KEY_PATH=/path/to/key
+```
 
 ## Planned Features
 - [ ] Deliver mails to IMAP clients inside the LAN
