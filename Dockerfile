@@ -13,6 +13,7 @@ WORKDIR /app/cmd
 RUN go build -o imap
 
 EXPOSE 143
+EXPOSE 993
 EXPOSE 8080
 
 WORKDIR /app
