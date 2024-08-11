@@ -13,5 +13,8 @@ WORKDIR /app/cmd
 RUN go build -o imap
 
 EXPOSE 143
+EXPOSE 8080
 
-CMD ["./imap"]
+WORKDIR /app
+
+CMD ["./cmd/imap", "test", "test"]

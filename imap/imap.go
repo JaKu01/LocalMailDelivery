@@ -1,4 +1,4 @@
-package LocalMail
+package imap
 
 import (
 	"crypto/tls"
@@ -8,7 +8,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 )
 
 func loadTLSConfig(config *tls.Config, tlsCert string, tlsKey string) {
@@ -23,38 +22,11 @@ func loadTLSConfig(config *tls.Config, tlsCert string, tlsKey string) {
 	}
 }
 
-func setupUser(memServer *imapmemserver.Server, username string, password string) {
-	if username != "" || password != "" {
-		user := imapmemserver.NewUser(username, password)
-		user.Create("INBOX", &imap.CreateOptions{})
-
-		msgString := GetTestMessage("This is a test mail").String()
-
-		_, err := user.Append("INBOX", strings.NewReader(msgString), &imap.AppendOptions{
-			Flags: []imap.Flag{imap.FlagSeen},
-		})
-
-		if err != nil {
-			log.Fatalf("Failed to append message: %v", err)
-		}
-
-		memServer.AddUser(user)
-		go handleUser(user)
-	}
-}
-
-func StartServer(insecureAuth bool, username string, password string) {
+func CreateServer(insecureAuth bool) (*imapmemserver.Server, *imapserver.Server) {
 	var tlsConfig *tls.Config
 	loadTLSConfig(tlsConfig, "", "")
 
-	ln, err := net.Listen("tcp", "0.0.0.0:143")
-	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
-	}
-	log.Printf("IMAP server listening on %v", ln.Addr())
-
 	memServer := imapmemserver.New()
-	setupUser(memServer, username, password)
 
 	server := imapserver.New(&imapserver.Options{
 		NewSession: func(conn *imapserver.Conn) (imapserver.Session, *imapserver.GreetingData, error) {
@@ -68,6 +40,15 @@ func StartServer(insecureAuth bool, username string, password string) {
 		InsecureAuth: insecureAuth,
 		DebugWriter:  os.Stdout,
 	})
+
+	return memServer, server
+}
+
+func RunServer(server *imapserver.Server) {
+	ln, err := net.Listen("tcp", "0.0.0.0:143")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
 
 	if err := server.Serve(ln); err != nil {
 		log.Fatalf("Serve() = %v", err)

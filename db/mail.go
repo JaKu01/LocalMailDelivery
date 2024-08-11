@@ -1,15 +1,17 @@
-package LocalMail
+package db
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	"strings"
 )
 
 type Mail struct {
-	From    string `json:"from"`
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Body    string `json:"body"`
+	gorm.Model `json:"-"`
+	From       string `json:"from"`
+	To         string `json:"to"`
+	Subject    string `json:"subject"`
+	Body       string `json:"body"`
 }
 
 func (m *Mail) String() string {
@@ -22,11 +24,11 @@ func (m *Mail) String() string {
 	return builder.String()
 }
 
-func GetTestMessage(body string) *Mail {
+func GetGreetingMessage(body string) *Mail {
 	return &Mail{
 		From:    "Jannes Morning Briefing <morning@jskweb.de>",
 		To:      "jannes@jskweb.de",
-		Subject: "Morning Briefing Teste",
+		Subject: "Morning Briefing Test",
 		Body:    body,
 	}
 }
