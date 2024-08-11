@@ -11,8 +11,8 @@ You can configure your username, password, certificates, and keys through the fo
 ```
 USERNAME=yourusername
 PASSWORD=yourpassword
-CERTIFICATE_PATH=/path/to/certificate
-KEY_PATH=/path/to/key
+CERTPATH=/path/to/certificate
+KEYPATH=/path/to/key
 ```
 
 ## Planned Features
