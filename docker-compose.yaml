@@ -1,0 +1,25 @@
+services:
+  mail:
+      build:
+        dockerfile: Dockerfile
+      container_name: mail
+      ports:
+        - "143:143"
+        - "993:993"  
+      volumes:
+        - ../home-server/certbot/conf:/certs:ro # mount SSL certs
+        - ./db/sqlite:/app/db/sqlite # mount DB 
+      labels:
+        - traefik.http.services.mail.loadbalancer.server.port=8080
+      environment:
+        - TZ=Europe/Berlin
+        - USERNAME=${USERNAME}
+        - PASSWORD=${PASSWORD}
+        - CERTPATH=${CERTPATH}
+        - KEYPATH=${KEYPATH}
+      networks:
+      - home_network
+
+networks:
+  home_network:
+    external: true
